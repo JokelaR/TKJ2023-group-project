@@ -1,0 +1,11 @@
+
+**** Build of configuration Debug for project empty_CC2650STK_TI ****
+
+/home/linuxlite/ti/ccs1040/ccs/utils/bin/gmake -k -j 2 all -O 
+ 
+making ../src/sysbios/rom_sysbios.aem3 ...
+gmake[1]: Nothing to be done for 'all'.
+making ../src/sysbios/rom_sysbios.aem3 ...
+gmake[2]: Nothing to be done for 'all'.
+
+**** Build Finished ****

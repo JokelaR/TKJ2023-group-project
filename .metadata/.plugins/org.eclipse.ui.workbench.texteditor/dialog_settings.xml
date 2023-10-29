@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item key="selection" value="uart"/>
+		<item key="wrap" value="true"/>
+		<item key="casesensitive" value="false"/>
+		<item key="wholeword" value="false"/>
+		<item key="incremental" value="false"/>
+		<item key="isRegEx" value="false"/>
+		<list key="findhistory">
+			<item value="uart"/>
+			<item value="Exercise 4"/>
+			<item value="3."/>
+			<item value="Exercise 3"/>
+			<item value="return"/>
+			<item value="Clock_tickPeriod"/>
+			<item value="Board_I2C"/>
+			<item value="Board_I2C3"/>
+			<item value="Board_I2C2"/>
+			<item value="Board_I2C12"/>
+			<item value="Board_I2C1"/>
+			<item value="opt"/>
+			<item value="Board_I2C_TMP"/>
+			<item value="Board_LED"/>
+			<item value="buttonState"/>
+		</list>
+		<list key="replacehistory">
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="1211"/>
+		<item key="DIALOG_Y_ORIGIN" value="169"/>
+		<item key="DIALOG_WIDTH" value="361"/>
+		<item key="DIALOG_HEIGHT" value="474"/>
+		<item key="DIALOG_FONT_NAME" value="1|Roboto|12.0|0|GTK|1|"/>
+	</section>
+</section>
