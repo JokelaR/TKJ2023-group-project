@@ -23,6 +23,10 @@
 #include "Board.h"
 #include "sensors/mpu9250.h"
 
+struct mpuMeasurement {
+    float gx, gy, gz;
+    float rx, ry, rz;
+};
 
 /* Task */
 #define STACKSIZE 2048
@@ -31,13 +35,17 @@ Char uartTaskStack[STACKSIZE];
 
 // JTKJ: Teht�v� 3. Tilakoneen esittely
 // JTKJ: Exercise 3. Definition of the state machine
-enum state { WAITING=1, DATA_READY };
+enum state { WAITING=1, RECORD_MOTION, MOTION_IDENTIFIED, DATA_READY };
 enum state programState = WAITING;
 
 //global accelerometer TEMP
 float ax, ay, az, gx, gy, gz;
 UInt32 measurement_tick;
 
+#define MEASUREMENTCOUNT 32
+
+struct mpuMeasurement measurementBuffer[MEASUREMENTCOUNT];
+UInt32 measurements = 0;
 
 //handles
 static PIN_Handle button1Handle;
@@ -69,9 +77,23 @@ PIN_Config ledConfig[] = {
     PIN_TERMINATE
 };
 
+//TODO button task
+
+void buttonTaskFxn (UArg arg0, UArg arg1) {
+    //setup button(s)
+
+    while(1) {
+        //reset measurement count to 0
+    }
+}
+
+//TODO beep task
+
+//TODO network task
+
 
 /* Task Functions */
-Void uartTaskFxn(UArg arg0, UArg arg1) {
+void uartTaskFxn(UArg arg0, UArg arg1) {
     UART_Handle uart;
     UART_Params uartParams;
 
@@ -134,6 +156,9 @@ void mpuTaskFxn(UArg arg0, UArg arg1) {
     System_printf("MPU9250: Setup and calibration OK\n");
     System_flush();
 
+    //FOR TESTING
+    programState = RECORD_MOTION;
+
     // Loop forever
     while (1) {
         if(programState == WAITING) {
@@ -142,9 +167,60 @@ void mpuTaskFxn(UArg arg0, UArg arg1) {
 
             programState = DATA_READY;
         }
+
+        if(programState == RECORD_MOTION) {
+            UInt motionIndex = wrapIndex(measurements);
+            //collect motion measurement
+            mpu9250_get_data(&i2cMPU,
+                             &measurementBuffer[motionIndex].gx,
+                             &measurementBuffer[motionIndex].gy,
+                             &measurementBuffer[motionIndex].gz,
+                             &measurementBuffer[motionIndex].rx,
+                             &measurementBuffer[motionIndex].ry,
+                             &measurementBuffer[motionIndex].rz
+            );
+            measurements++;
+
+            //enough measurements gathered for detection
+            if (measurements > 6) {
+                //roll check
+                if(measurementBuffer[motionIndex].rx > 200) {
+                    Int offsetIndex = wrapIndex(motionIndex - 6);
+                    if (measurementBuffer[offsetIndex].rx < -200) {
+                        System_printf("Detected roll\n");
+                    }
+                }
+
+                //front-back-wrist-motion check
+                if(measurementBuffer[motionIndex].ry > 200) {
+                    Int offsetIndex = wrapIndex(motionIndex - 6);
+                    if (measurementBuffer[offsetIndex].ry < -200) {
+                        System_printf("Detected forwards-wrist-motion\n");
+                    }
+                }
+
+                if(measurementBuffer[motionIndex].gz > 1) {
+                    Int offsetIndex = wrapIndex(motionIndex - 6);
+                    if (measurementBuffer[offsetIndex].gz < -1.2) {
+                        System_printf("Detected up-down\n");
+                    }
+
+                }
+            }
+        }
+
         // Wait for ???s
         Task_sleep(62500 / Clock_tickPeriod);
     }
+}
+
+//helper for index wrapping
+Int wrapIndex (Int index) {
+    index = index % MEASUREMENTCOUNT;
+    if(index < 0) {
+        index = index + MEASUREMENTCOUNT;
+    }
+    return index;
 }
 
 
